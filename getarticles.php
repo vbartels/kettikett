@@ -61,7 +61,23 @@ function createPDF() {
 		$product = getProductByEAN((int) $number);
 		
 		$name = $product->name;
-		$price = $product->prices[0]->value;
+		
+		$price = 0;
+		$pricecounter = 0;
+		foreach($product->prices as $price) { //collect cleaned prices into array
+			$nextprice = $price->validFrom; 	//Date Format: 2021-07-26T11:46:37.062Z
+			$nextprice = substr($nextprice, 0, -15);
+			$nextprice = (int) preg_replace("/-/", "", $nextprice);
+			
+			if ($nextprice != 0) {
+				$prices[$pricecounter] = $nextprice;
+			}
+			$pricecounter++;
+		}
+		
+		$today = (int) date("Ymd");
+		$price = $product->prices[getClosest($today, $prices)]->value;	//set price closest to now
+		
 		if (! is_null($product->subproducts)) {
 			$pawn = $product->subproducts[0]->prices[0]->value;
 		} else {
@@ -238,6 +254,10 @@ function processForm() {
 	$border_enabled = (bool)$_POST['border'];
 	$cosmetics = (bool)$_POST['cosmetics'];
 	$ean_numbers = explode("\n", $_POST['EANs']); //explode given EANs into array
+	
+	array_walk($ean_numbers, 'trim_value'); //remove empty entries (for example trailing \n from barcode scanner at the end of the input)
+	$ean_numbers = array_filter($ean_numbers, 'strlen'); 
+	$ean_numbers = array_values($ean_numbers);
 }
 
 function checkProductSizes() {
@@ -330,6 +350,21 @@ function getProductByEAN(int $ean) {
 	return $product;
 }
 
+function getClosest($search, $arr) {
+   $closest = null;
+   $counter = 0;
+   foreach ($arr as $item) {
+      if ($closest === null || abs($search - $closest) > abs($item - $search)) {
+		 $closest = $item;
+         $closest_index = $counter;
+      }
+	  $counter++;
+   }
+   return $closest_index;
+}
+
+
+
 ### MAIN CODE ###
 
 $list = getProductList(); 	//get all products via Korona API
@@ -343,6 +378,11 @@ function print_r2($val){
         echo '<pre>';
         print_r($val);
         echo  '</pre>';
+}
+
+function trim_value(&$value) 
+{ 
+    $value = trim($value); 
 }
 
 ?>
