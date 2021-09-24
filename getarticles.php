@@ -63,6 +63,7 @@ function createPDF() {
 		$name = $product->name;
 		
 		$price = 0;
+		$prices = null;
 		$pricecounter = 0;
 		foreach($product->prices as $price) { //collect cleaned prices into array
 			$nextprice = $price->validFrom; 	//Date Format: 2021-07-26T11:46:37.062Z
@@ -76,7 +77,9 @@ function createPDF() {
 		}
 		
 		$today = (int) date("Ymd");
+		//print_r2("vorher: " . $price->value);
 		$price = $product->prices[getClosest($today, $prices)]->value;	//set price closest to now
+		//print_r2("nachher: " . $price);
 		
 		if (! is_null($product->subproducts)) {
 			$pawn = $product->subproducts[0]->prices[0]->value;
