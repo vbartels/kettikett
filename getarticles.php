@@ -312,7 +312,7 @@ function curlRequest($command) {
 }
 
 function getProductList() {
-	$command = "/accounts/09adedf0-5690-40c3-98a4-983a1426357e/products";
+	$command = "/accounts/" . $apikey . "/products";
 	$products = curlRequest($command);
 	
 	while (! is_null($products->links->next)) { //Pagination
@@ -342,7 +342,7 @@ function getProductByEAN(int $ean) {
 	if(! is_null($list)) {
 		
 		if(! is_null($list[$ean])) {
-			$command = "/accounts/09adedf0-5690-40c3-98a4-983a1426357e/products/" . $list[$ean];
+			$command = "/accounts/" . $apikey . "/products/" . $list[$ean];
 			$product = curlRequest($command);
 		} else {
 			#exit("Something went wrong :(");
@@ -371,7 +371,7 @@ function getClosest($search, $arr) {
 ### MAIN CODE ###
 
 $list = getProductList(); 	//get all products via Korona API
-processForm();				//get EANs and settings
+processForm();			//get EANs and settings
 checkProductSizes();		//check if given products have all needed values in KORONA backend, if not->print warning
 createPDF();
 
