@@ -22,3 +22,6 @@ All "work" is done inside getarticles.php.
 
 Known Issues:
 ketikett currently gets all articles out of the backend per print.. this takes some time and need fpr ~15.000 articles up to over a minute. This is not elegant.. a local cache would save bandwidth and fast things up. However it works as it is...
+
+Disclaimer:
+this was hacked together by me after not writing any code for ~15years. Sorry 
